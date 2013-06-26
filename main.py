@@ -31,25 +31,38 @@ class MainPage(webapp2.RequestHandler):
         self.write_form(text)
 
 class SignupPage(webapp2.RequestHandler):
-    def write_form(self,
-                   username = '',
-                   password = '',
-                   verify = '',
-                   email = '',
-                   username_error = '',
-                   password_error = '',
-                   verify_error = '',
-                   email_error = ''):
-        template_values = {'username': username,
-                           'password': password,
-                           'verify': verify,
-                           'email': email,
-                           'username_error': username_error,
-                           'password_error': password_error,
-                           'verify_error': verify_error,
-                           'email_error': email_error}
+##    def write_form(self,
+##                   username = '',
+##                   password = '',
+##                   verify = '',
+##                   email = '',
+##                   username_error = '',
+##                   password_error = '',
+##                   verify_error = '',
+##                   email_error = ''):
+##        template_values = {'username': username,
+##                           'password': password,
+##                           'verify': verify,
+##                           'email': email,
+##                           'username_error': username_error,
+##                           'password_error': password_error,
+##                           'verify_error': verify_error,
+##                           'email_error': email_error}
+##        template = jinja_environment.get_template('signup.html')
+##        self.response.out.write(template.render(template_values))
+
+    def write_form(self, **kwargs):
+##        template_values = {'username': username,
+##                           'password': password,
+##                           'verify': verify,
+##                           'email': email,
+##                           'username_error': username_error,
+##                           'password_error': password_error,
+##                           'verify_error': verify_error,
+##                           'email_error': email_error}
         template = jinja_environment.get_template('signup.html')
-        self.response.out.write(template.render(template_values))
+##        self.response.out.write(template.render(template_values))
+        self.response.out.write(template.render(kwargs))
 
 
     def get(self):
@@ -61,29 +74,31 @@ class SignupPage(webapp2.RequestHandler):
         password_error = ''
         verify_error = ''
         email_error = ''
-        
+        have_error = False
+
         username = self.request.get('username')
         password = self.request.get('password')
         verify = self.request.get('verify')
         email = self.request.get('email')
+        
+        kwargs = dict(username = username,
+              email = email)
+        
         if not ufuncts.valid_username(username):
-            username_error = C_USERNAME_ERROR
+            kwargs['username_error'] = C_USERNAME_ERROR
+            have_error = True
         if not ufuncts.valid_password(password):
-            password_error = C_PASSWORD_ERROR
+            kwargs['password_error'] = C_PASSWORD_ERROR
+            have_error = True
         if (not password_error and not password == verify):
-            verify_error = C_VERIFY_ERROR
+            kwargs['verify_error'] = C_VERIFY_ERROR
+            have_error = True
         if email and not ufuncts.valid_email(email):
-            email_error = C_EMAIL_ERROR
+            kwargs['email_error'] = C_EMAIL_ERROR
+            have_error = True
 
-        if (username_error or password_error or verify_error or email_error):            
-            self.write_form(username,
-                            '',
-                            '',
-                            email,
-                            username_error,
-                            password_error,
-                            verify_error,
-                            email_error)
+        if have_error:            
+            self.write_form(**kwargs)
         else:
             self.redirect('/welcome?username=' + username)
 
