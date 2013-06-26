@@ -3,7 +3,7 @@ import jinja2
 import webapp2
 import ufuncts
 
-# error strings
+# error strings constants
 C_USERNAME_ERROR = "That's not a valid username."
 C_PASSWORD_ERROR = "That wasn't a valid password."
 C_VERIFY_ERROR = "Your passwords didn't match."
